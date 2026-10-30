@@ -1,0 +1,18 @@
+{
+  "name": "ai-missy-offline-qvac-build08",
+  "version": "0.8.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "model:preload": "node scripts/preload-model.mjs",
+    "model:offline": "node scripts/offline-smoke.mjs",
+    "test": "python -m unittest discover -s tests -v",
+    "start": "python server.py",
+    "ship:audit": "python scripts/ship_audit.py",
+    "release:audit": "python scripts/build08_release_audit.py",
+    "test:e2e:real": "python scripts/live_http_e2e.py --output local-evidence/qvac-http-e2e-manual.json"
+  },
+  "dependencies": {
+    "@qvac/sdk": "0.22.0"
+  }
+}

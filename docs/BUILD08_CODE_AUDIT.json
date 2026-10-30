@@ -1,0 +1,47 @@
+{
+  "schema": "ai-missy-build08-code-audit/1",
+  "generated_utc": "2026-10-30T12:37:01.055077+00:00",
+  "code_gate": "PASS",
+  "ship_gate": "NO_GO_UNTIL_WINDOWS_QVAC_EVIDENCE_AND_PUBLIC_SUBMISSION",
+  "missing_files": [],
+  "tests": {
+    "status": "PASS",
+    "exit_code": 0,
+    "tail": "red while calling deallocator <function _TemporaryFileCloser.__del__ at 0x000001F08C420D50>:\nTraceback (most recent call last):\n  File \"C:\\Python314\\Lib\\tempfile.py\", line 484, in __del__\n    _warnings.warn(self.warn_message, ResourceWarning)\nResourceWarning: Implicitly cleaning up <HTTPError 422: 'Unprocessable Content'>\nException ignored while calling deallocator <function _TemporaryFileCloser.__del__ at 0x000001F08C420D50>:\nTraceback (most recent call last):\n  File \"C:\\Python314\\Lib\\tempfile.py\", line 484, in __del__\n    _warnings.warn(self.warn_message, ResourceWarning)\nResourceWarning: Implicitly cleaning up <HTTPError 404: 'Not Found'>\nException ignored while calling deallocator <function _TemporaryFileCloser.__del__ at 0x000001F08C420D50>:\nTraceback (most recent call last):\n  File \"C:\\Python314\\Lib\\tempfile.py\", line 484, in __del__\n    _warnings.warn(self.warn_message, ResourceWarning)\nResourceWarning: Implicitly cleaning up <HTTPError 403: 'Forbidden'>\nException ignored while calling deallocator <function _TemporaryFileCloser.__del__ at 0x000001F08C420D50>:\nTraceback (most recent call last):\n  File \"C:\\Python314\\Lib\\tempfile.py\", line 484, in __del__\n    _warnings.warn(self.warn_message, ResourceWarning)\nResourceWarning: Implicitly cleaning up <HTTPError 403: 'Forbidden'>\n----------------------------------------------------------------------\nRan 74 tests in 4.589s\n\nOK\n"
+  },
+  "javascript_syntax": {
+    "scripts/qvac-parse.mjs": {
+      "status": "PASS",
+      "exit_code": 0,
+      "tail": ""
+    },
+    "scripts/offline-smoke.mjs": {
+      "status": "PASS",
+      "exit_code": 0,
+      "tail": ""
+    },
+    "web/app.js": {
+      "status": "PASS",
+      "exit_code": 0,
+      "tail": ""
+    }
+  },
+  "source_sha256": {
+    "core.py": "4be81e1e019f61a6d5884059b0c64dc9ea9adf3dfbe9fdaf9e149055f917e2e1",
+    "server.py": "8576b4d7aa170974ce90683a3f855bc12219ee00cc69f6425539a8d6ce87cc1f",
+    "package.json": "938c3f8ced0950bf6dc6cacb70a0052140d37abb147a21b48867a3e504d02966",
+    "scripts/qvac-parse.mjs": "394813329779b2113f74149b4cdf44b7c0ca1e5a09a09ff2ccb9f4935941d81b",
+    "scripts/offline-smoke.mjs": "879c445c7402bb88aa82c346f74e4cda25b0a87c99eb79a8778777594b22ec84",
+    "scripts/windows-build08.ps1": "4b476293c848d60a9c7991b84e05a1d595a3f472c405f241b94e9da656f857db",
+    "tests/test_build08_safety.py": "eb7951140f10d06725d7c5e7f2b38f87b1701dca03273ce1bed67ce186b892b0"
+  },
+  "not_verified": [
+    "QVAC model downloaded",
+    "Windows Vulkan",
+    "Windows real offline inference",
+    "Uncut video",
+    "GitHub repository",
+    "DoraHacks submission"
+  ],
+  "limitations": "No model or QVAC SDK in this artifact; no clinical validation."
+}

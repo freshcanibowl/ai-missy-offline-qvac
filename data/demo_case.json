@@ -1,0 +1,21 @@
+{
+  "synthetic": true,
+  "schema_version": "ai-missy.offline-demo.v1",
+  "plan": {
+    "plan_id": "DEMO-PLAN-001",
+    "clinician_review_status": "SYNTHETIC_DEMO_CONFIRMED",
+    "fluid_record_target_ml": 1000,
+    "effective_date": "2026-10-29",
+    "warning": "Demonstration value only; not a clinical recommendation"
+  },
+  "observations": [
+    {"event_id": "DEMO-EVT-001", "type": "fluid", "volume_ml": 500, "confirmed_by_user": true},
+    {"event_id": "DEMO-EVT-002", "type": "fluid", "volume_ml": 200, "confirmed_by_user": true}
+  ],
+  "expected": {
+    "recorded_fluid_ml": 700,
+    "remaining_record_target_ml": 300,
+    "uncertainty": "Unrecorded beverages and food fluids may be missing",
+    "not_allowed": ["predict_interdialytic_weight_gain", "prescribe_fluid_change", "diagnose"]
+  }
+}
