@@ -20,7 +20,7 @@ EXPECTED_CHECKS = (
     'synthetic_fluid_confirmation', 'safety_checks',
 )
 NAMES = ('qvac-verified-', 'qvac-http-e2e-')
-SUFFIX = re.compile(r'^202[0-9]{5}-[0-9]{6}\.json)
+SUFFIX = re.compile(r'^202[0-9]{5}-[0-9]{6}\.json$')
 
 def digest(path: Path) -> str:
     h = hashlib.sha256()
