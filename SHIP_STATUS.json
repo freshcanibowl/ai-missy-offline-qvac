@@ -1,8 +1,8 @@
 {
   "schema": "ai-missy-final-ship/1",
-  "code_tests": "PASS_74_OF_74_LOCAL",
-  "javascript_syntax": "PASS",
-  "windows_qvac_offline": "HOST_REPORTED_PASS_UNCUT_VIDEO_PENDING_REVIEW",
+  "code_tests": "PASS_74_OF_74_PREVIOUS_LOCAL",
+  "javascript_syntax": "PASS_PREVIOUS_LOCAL",
+  "windows_qvac_offline": "PENDING",
   "public_repo": "NOT_RELEASED",
   "dorahacks_submission": "NOT_SUBMITTED",
   "ship_decision": "PRIVATE_SHIPPED_PUBLIC_RELEASE_NO_GO",
