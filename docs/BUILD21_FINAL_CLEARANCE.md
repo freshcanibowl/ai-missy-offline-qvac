@@ -7,15 +7,18 @@
 - Build 20 technical evidence package: PASS, per host terminal output.
 - Private GitHub repository and draft PR exist; no public release or DoraHacks submission is verified.
 
-## Organizer submission timing — URGENT, OFFICIAL CONFIRMATION NEEDED
-- Public [AI Yako event listing](https://www.eventbrite.com/e/ai-yako-own-your-ai-tickets-2003702435924) gives 24–31 Oct 2026 event dates and links to [official DoraHacks project portal](https://dorahacks.io/hackathon/ai-yako/detail).
-- A [secondary event listing](https://ainave.com/events/hackathons/ai-yako) states project submission deadline **30 Oct 2026 17:00 EAT**, equivalent to **30 Oct 2026 22:00 MYT**. This is not independently confirmed from the DoraHacks live portal.
-- The host offline evidence timestamp `20261030-230025` is after that reported cutoff. **Do not claim timely submission.**
-- Official portal must be checked for actual open/closed status, eligibility and any grace period. Do not backdate evidence or create a false submission receipt.
+## Organizer submission timing — EXTENDED, per user-provided event timeline (UTC+8)
+- Pre-registration: 2026-10-21 14:00 MYT.
+- Submission opens: 2026-10-24 14:00 MYT.
+- Original deadline: 2026-10-30 22:00 MYT.
+- **Extended deadline: 2026-10-31 01:00 MYT** (three-hour extension).
+- Source: organizer event timeline text provided by the participant; no independent live portal check or submission receipt yet.
+- Host receipt timestamp `20261030-230025` falls **before the extended deadline**. The previous assertion that it was after the deadline is superseded.
+- Actual submission remains **NOT VERIFIED**. Do not backdate evidence or invent a submission receipt. Confirm submission portal and organizer eligibility before claiming entered.
 
 ## Evidence and video
 - `BUILD20_JUDGE_REVIEW.zip` is a local redacted reviewer bundle, not a submitted artifact.
-- Continuous uncut video: NOT VERIFIED. Ask operator to provide original recording or capture a new run clearly labeled as **post-deadline evidence** if after the official deadline.
+- Continuous uncut video: NOT VERIFIED. Ask operator to provide original recording or capture a new run labeled with its actual recording timestamp; do not backdate it.
 - Optional video SHA-256 and local file size are integrity evidence only, not proof of continuous disconnection.
 - Host transcript and raw receipts remain local, outside Git.
 
@@ -25,5 +28,5 @@
 - Transitive dependency notices and application license: PENDING.
 
 ## Decision
-**PRIVATE REVIEW PACKAGE: READY FOR INTERNAL REVIEW. PUBLIC RELEASE / COMPETITION SUBMISSION: NO_GO.**
+**PRIVATE REVIEW PACKAGE: READY FOR INTERNAL REVIEW. PUBLIC RELEASE: NO_GO. COMPETITION SUBMISSION: NOT VERIFIED; TIME WINDOW EXTENDED TO 2026-10-31 01:00 MYT.**
 Next steps: confirm official DoraHacks portal deadline and submission status; collect original uncut video if one exists; complete license and prior-work review; obtain explicit authorization before public changes.
