@@ -8,4 +8,4 @@
 | CAIOS | `corwinlim/caios-2.0` (private) | Event provenance and longitudinal context | Architecture inspiration only; no veterinary rules or private source copied |
 | ACE Health OS | Local Build 04C.2 and later versions not inspected here | Unknown | No source imported |
 
-All synthetic patient values and implementation code in this archive were developed for the independent Build 02–04 prototype. GitHub repo has not been created or modified. Check third-party licenses before submission.
+All synthetic patient values and implementation code in this archive were developed for the independent Build 02–04 prototype. The independent prototype is now in the private GitHub repository `freshcanibowl/ai-missy-offline-qvac`. No public release or DoraHacks submission has been verified. Check third-party licenses and organizer prior-work rules before submission.

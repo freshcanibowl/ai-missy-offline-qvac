@@ -3,7 +3,7 @@ from pathlib import Path
 import subprocess,sys,hashlib,json,datetime
 ROOT=Path(__file__).resolve().parents[1]
 OUTPUT=ROOT/'local-evidence'/'FINAL_LOCAL_CODE_AUDIT.json'
-REQUIRED=['FINAL_WINDOWS_RUN.ps1','START_HERE_WINDOWS.ps1','RUN_SHIP_DIAGNOSTICS.ps1','core.py','server.py','scripts/qvac-parse.mjs','scripts/offline-smoke.mjs','scripts/preload-model.mjs','scripts/windows-offline-gate.ps1','scripts/publish-new-repo.ps1','package.json','web/index.html','web/app.js','web/style.css','data/demo_case.json']
+REQUIRED=['FINAL_WINDOWS_RUN.ps1','START_HERE_WINDOWS.ps1','RUN_SHIP_DIAGNOSTICS.ps1','core.py','server.py','scripts/qvac-parse.mjs','scripts/offline-smoke.mjs','scripts/preload-model.mjs','scripts/windows-offline-gate.ps1','package.json','web/index.html','web/app.js','web/style.css','data/demo_case.json']
 missing=[f for f in REQUIRED if not (ROOT/f).is_file()]
 cmd=[sys.executable,'-m','unittest','discover','-s','tests','-v']
 run=subprocess.run(cmd,cwd=ROOT,capture_output=True,text=True,timeout=120)

@@ -1,9 +1,10 @@
 {
   "schema": "ai-missy-final-ship/1",
-  "code_tests": "PASS_74_OF_74_LOCAL",
-  "javascript_syntax": "PASS",
+  "code_tests": "PASS_74_OF_74_PREVIOUS_LOCAL",
+  "javascript_syntax": "PASS_PREVIOUS_LOCAL",
   "windows_qvac_offline": "PENDING",
-  "public_repo": "NOT_VERIFIED",
-  "dorahacks_submission": "NOT_VERIFIED",
-  "ship_decision": "NO_GO_UNTIL_HOST_PROOF_AND_SUBMISSION"
+  "public_repo": "NOT_RELEASED",
+  "dorahacks_submission": "NOT_SUBMITTED",
+  "ship_decision": "PRIVATE_SHIPPED_PUBLIC_RELEASE_NO_GO",
+  "private_repo": "VERIFIED_GITHUB_MAIN_DED565A846667D84C68705623C9888EFDB7BFEB3"
 }
