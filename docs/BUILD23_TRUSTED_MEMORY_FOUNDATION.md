@@ -19,7 +19,7 @@ Give AI Missy a local read-only longitudinal view of *confirmed synthetic* fluid
 git fetch origin build23/synthetic-care-timeline
 git worktree add --detach "$env:USERPROFILE\Downloads\AI_Missy_Build23_Review" origin/build23/synthetic-care-timeline
 Set-Location "$env:USERPROFILE\Downloads\AI_Missy_Build23_Review"
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\build22-host-gate.ps1
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\build23-host-gate.ps1
 py server.py
 ```
 Open `http://127.0.0.1:8766`. Use an **isolated synthetic SQLite DB** to avoid mixing test records. After a confirmed 200 mL log, click **View care timeline** and verify the event is visible, then **Download synthetic JSON** to compare.
