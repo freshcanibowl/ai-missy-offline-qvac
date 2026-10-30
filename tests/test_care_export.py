@@ -52,12 +52,12 @@ class SyntheticCareExportTests(unittest.TestCase):
 
     def test_reject_oversized_event_export(self):
         rows = [
-            (str(uuid.uuid4()), 1, "2026-10-31T00:00:00+00:00")
+            (str(uuid.uuid4()), 1, "Log 1 ml water", "2026-10-31T00:00:00+00:00")
             for _ in range(1001)
         ]
         with self.conn:
             self.conn.executemany(
-                "INSERT INTO observations(id,ml,confirmed_at) VALUES(?,?,?)", rows
+                "INSERT INTO observations(id,ml,source,confirmed_at) VALUES(?,?,?,?)", rows
             )
         with self.assertRaisesRegex(ValueError, "EXPORT_TOO_LARGE"):
             build_synthetic_export(self.conn)
