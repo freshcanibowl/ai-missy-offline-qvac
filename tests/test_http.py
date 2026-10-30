@@ -49,6 +49,21 @@ class HttpTests(unittest.TestCase):
         code,r=self.request('/api/reminder',{'title':'Check synthetic plan','due_at':due});self.assertEqual(code,200)
         code,s=self.request('/api/status');self.assertTrue(any(x['id']==r['id'] for x in s['reminders']))
         code,a=self.request('/api/ack',{'id':r['id']});self.assertEqual(code,200);self.assertTrue(a['acknowledged'])
+    def test_synthetic_export_requires_token_and_is_minimized(self):
+        code, rejected = self.request('/api/export', {}, token='invalid')
+        self.assertEqual(code, 403)
+        self.assertEqual(rejected['error'], 'TOKEN_REJECTED')
+        code, exported = self.request('/api/export', {})
+        self.assertEqual(code, 200)
+        self.assertTrue(exported['synthetic'])
+        self.assertEqual(exported['schema_version'], 'ai-missy.synthetic-care.v1')
+        self.assertNotIn('source', exported)
+        self.assertNotIn('reminders', exported)
+        self.assertNotIn('reminder_titles', exported)
+        code, invalid = self.request('/api/export', {'unexpected': True})
+        self.assertEqual(code, 422)
+        self.assertEqual(invalid['error'], 'EXPORT_REQUEST_MUST_BE_EMPTY')
+
     def test_invalid_path(self):
         code,r=self.request('/api/unknown',{});self.assertEqual(code,404)
     def test_local_ui_has_no_external_assets(self):

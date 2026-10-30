@@ -1,0 +1,27 @@
+name: Build22 synthetic export regression
+
+on:
+  pull_request:
+    paths:
+      - "care_export.py"
+      - "core.py"
+      - "server.py"
+      - "web/**"
+      - "tests/**"
+      - ".github/workflows/build22-export-tests.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-python-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run deterministic offline unit and HTTP tests
+        run: python -m unittest discover -s tests -v
