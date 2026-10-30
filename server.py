@@ -4,6 +4,7 @@ from pathlib import Path
 from contextlib import closing
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from core import connect,summary,validate_qvac_envelope,verify_original_text,confirm,food_lookup,add_reminder,reminders,acknowledge
+from care_export import build_synthetic_export
 ROOT=Path(__file__).resolve().parent
 DB=Path(os.environ.get('MISSY_DB_PATH',str(ROOT/'missy_demo.sqlite3')))
 TOKEN=secrets.token_urlsafe(32)
@@ -72,6 +73,9 @@ class Handler(BaseHTTPRequestHandler):
                     PENDING[rid] = {'ml':ml,'text':text,'expires':now+300}
                 return self.response({'pending':{'volume_ml':ml,'source':text,'request_id':rid},'proof':{'engine':result['engine'],'model':result['model'],'latency_ms':result['latency_ms']},'needs_confirmation':True})
             with closing(connect(DB)) as c:
+                if path=='/api/export':
+                    if obj: raise ValueError('EXPORT_REQUEST_MUST_BE_EMPTY')
+                    return self.response(build_synthetic_export(c))
                 if path=='/api/confirm':
                     rid=obj.get('request_id')
                     with PENDING_LOCK:
