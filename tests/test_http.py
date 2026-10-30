@@ -64,6 +64,22 @@ class HttpTests(unittest.TestCase):
         self.assertEqual(code, 422)
         self.assertEqual(invalid['error'], 'EXPORT_REQUEST_MUST_BE_EMPTY')
 
+    def test_synthetic_timeline_is_token_protected(self):
+        code, denied = self.request('/api/timeline', {}, token='invalid')
+        self.assertEqual(code, 403)
+        self.assertEqual(denied['error'], 'TOKEN_REJECTED')
+        code, result = self.request('/api/timeline', {'limit': 10, 'offset': 0})
+        self.assertEqual(code, 200)
+        self.assertTrue(result['synthetic'])
+        self.assertEqual(result['schema_version'], 'ai-missy.synthetic-timeline.v1')
+        self.assertNotIn('source', result)
+        code, invalid = self.request('/api/timeline', {'limit': 100})
+        self.assertEqual(code, 422)
+        self.assertEqual(invalid['error'], 'INVALID_TIMELINE_LIMIT')
+        code, extra = self.request('/api/timeline', {'patient_id': 'unexpected'})
+        self.assertEqual(code, 422)
+        self.assertEqual(extra['error'], 'TIMELINE_REQUEST_INVALID')
+
     def test_invalid_path(self):
         code,r=self.request('/api/unknown',{});self.assertEqual(code,404)
     def test_local_ui_has_no_external_assets(self):

@@ -5,6 +5,7 @@ from contextlib import closing
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from core import connect,summary,validate_qvac_envelope,verify_original_text,confirm,food_lookup,add_reminder,reminders,acknowledge
 from care_export import build_synthetic_export
+from care_timeline import build_synthetic_timeline
 ROOT=Path(__file__).resolve().parent
 DB=Path(os.environ.get('MISSY_DB_PATH',str(ROOT/'missy_demo.sqlite3')))
 TOKEN=secrets.token_urlsafe(32)
@@ -73,6 +74,11 @@ class Handler(BaseHTTPRequestHandler):
                     PENDING[rid] = {'ml':ml,'text':text,'expires':now+300}
                 return self.response({'pending':{'volume_ml':ml,'source':text,'request_id':rid},'proof':{'engine':result['engine'],'model':result['model'],'latency_ms':result['latency_ms']},'needs_confirmation':True})
             with closing(connect(DB)) as c:
+                if path=='/api/timeline':
+                    if set(obj) - {'limit','offset'}: raise ValueError('TIMELINE_REQUEST_INVALID')
+                    return self.response(build_synthetic_timeline(
+                        c, limit=obj.get('limit', 20), offset=obj.get('offset', 0)
+                    ))
                 if path=='/api/export':
                     if obj: raise ValueError('EXPORT_REQUEST_MUST_BE_EMPTY')
                     return self.response(build_synthetic_export(c))
