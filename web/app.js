@@ -10,5 +10,29 @@ $('confirm').onclick=async()=>{if(!pending)return;try{await api('/api/confirm',p
 $('cancel').onclick=()=>{pending=null;$('pending').hidden=true;};
 $('food-btn').onclick=async()=>{try{const r=await api('/api/food',{name:$('food').value});$('food-result').textContent=(r.food?r.food+' — ':'')+r.message+' Source: '+(r.source||'No verified entry');}catch(e){showError('food-result',e);}};
 $('remind').onclick=async()=>{try{await api('/api/reminder',{title:'Review your saved care checklist',due_at:new Date(Date.now()+120000).toISOString()});await refresh();}catch(e){showError('reminder-list',e);}};
+let timelineOffset=0, timelineBusy=false;
+async function loadTimeline(reset=false){
+  if(timelineBusy)return;
+  timelineBusy=true;
+  $('timeline-load').disabled=true;
+  $('timeline-more').disabled=true;
+  try{
+    const offset=reset?0:timelineOffset;
+    const r=await api('/api/timeline',{limit:10,offset});
+    if(r.synthetic!==true||r.schema_version!=='ai-missy.synthetic-timeline.v1')throw Error('Timeline schema not verified');
+    if(reset)$('timeline-list').replaceChildren();
+    for(const event of r.events){
+      const p=document.createElement('p');
+      p.textContent=new Date(event.confirmed_at).toLocaleString()+' · '+event.volume_ml+' mL confirmed (synthetic)';
+      $('timeline-list').appendChild(p);
+    }
+    timelineOffset=offset+r.events.length;
+    $('timeline-more').hidden=!r.page.has_more;
+    $('timeline-result').textContent=r.page.total===0?'No confirmed synthetic events yet.':'Showing '+timelineOffset+' of '+r.page.total+' confirmed synthetic records.';
+  }catch(e){showError('timeline-result',e);}
+  finally{timelineBusy=false;$('timeline-load').disabled=false;$('timeline-more').disabled=false;}
+}
+$('timeline-load').onclick=()=>loadTimeline(true);
+$('timeline-more').onclick=()=>loadTimeline(false);
 $('export').onclick=async()=>{try{const record=await api('/api/export',{});if(record.synthetic!==true||record.schema_version!=='ai-missy.synthetic-care.v1')throw Error('Export schema not verified');const blob=new Blob([JSON.stringify(record,null,2)+'\n'],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='ai-missy-synthetic-care.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);$('export-result').textContent='Synthetic care record downloaded locally. No server upload.';}catch(e){showError('export-result',e);}};
 (async()=>{try{token=(await api('/api/session')).token;await refresh();setInterval(refresh,4000);}catch(e){showError('remaining',e);}})();
