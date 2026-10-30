@@ -1,6 +1,6 @@
 # AI Missy Offline — Build 08 | Ship-readiness hardening
 
-**Status: CODE GATE only; REAL WINDOWS QVAC OFFLINE UNVERIFIED; NO GITHUB PUBLICATION; NO DORAHACKS SUBMISSION.**
+**Status: PRIVATE GitHub repository verified (Build 15–16); 74 code tests passed in a local source snapshot. Public release and DoraHacks submission NOT performed. Continuous uncut Windows offline proof and third-party license clearance remain pending review.**
 
 A synthetic-only, local Windows browser demonstration. It is not a medical device and does not provide medical or nutrition treatment recommendations.
 
@@ -14,10 +14,10 @@ A synthetic-only, local Windows browser demonstration. It is not a medical devic
 
 ## Windows runbook
 
-Unzip to `%USERPROFILE%\Downloads\AI_Missy_Offline_Build08`, then in PowerShell:
+Unzip to `%USERPROFILE%\Downloads\AI_Missy_Offline_FinalShip`, then in PowerShell:
 
 ```powershell
-Set-Location "$env:USERPROFILE\Downloads\AI_Missy_Offline_Build08"
+Set-Location "$env:USERPROFILE\Downloads\AI_Missy_Offline_FinalShip"
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\windows-build08.ps1 -Phase Preflight
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\windows-build08.ps1 -Phase PrepareOnline
 ```
@@ -45,4 +45,4 @@ Official references: https://docs.qvac.tether.io/sdk/system-requirements/ and ht
 
 ## Shipping
 
-See `docs/BUILD08_SHIP_CHECKLIST.md`, `docs/DORAHACKS_SUBMISSION_DRAFT.md`, `docs/PRIOR_WORK_DISCLOSURE.md`. Public GitHub publishing is not performed by this ZIP. `scripts/publish-new-repo.ps1` defaults to dry-run and requires explicit confirmations for publication. Do not publish `.env`, `local-evidence`, model weights, logs, SQLite files or personal health data.
+See `docs/BUILD17_RELEASE_GATE.md`, `docs/THIRD_PARTY_LICENSE_REVIEW.md`, `docs/BUILD08_SHIP_CHECKLIST.md`, `docs/DORAHACKS_SUBMISSION_DRAFT.md`, `docs/PRIOR_WORK_DISCLOSURE.md`. The GitHub repository is PRIVATE; public release is blocked by the Build 17 checklist. The legacy `scripts/publish-new-repo.ps1` is not committed and must not be used for this workflow. Do not publish `.env`, `local-evidence`, model weights, logs, SQLite files or personal health data.
