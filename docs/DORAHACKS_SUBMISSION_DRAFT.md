@@ -21,7 +21,7 @@ An independent Windows localhost app using Python, SQLite, browser UI and QVAC S
 - Model download: `npm install && npm run model:preload` (online once)
 - Local inference: `npm run model:offline`, `node scripts/qvac-parse.mjs --stdin` (after disconnect)
 - Files: `scripts/preload-model.mjs`, `scripts/offline-smoke.mjs`, `scripts/qvac-parse.mjs`
-- Evidence: continuous offline video and Build 04 receipt **MUST BE ADDED AFTER REAL WINDOWS TEST**.
+- Evidence: Windows Build 18 host-observed offline gate PASS and Build 19 hash/semantic manifest PASS; independent continuous-video review remains PENDING. See docs/BUILD19_EVIDENCE_PACKAGE.md.
 
 ## What still requires internet
 Initial SDK installation and model download, source publishing, optional clinical sync (not implemented).
@@ -33,9 +33,9 @@ Voice STT/TTS, OCR, clinical-grade nutrition database, clinician-approved patien
 The idea builds on previously developed PAIR renal-care and ACE Health OS concepts and borrows generic architecture lessons from CARLi, EvidenceKit and CAIOS. See `docs/PRIOR_WORK_DISCLOSURE.md`. The demo code is independently implemented. Verify the QVAC SDK license and Meta Llama 3.2 model license before submission.
 
 ## Required submission placeholders — replace only with real evidence
-- Public repository: [NOT CREATED]
-- Continuous disconnected-network demo video: [NOT RECORDED]
-- Hardware OS / RAM / GPU / model cache size: [WINDOWS RECEIPT PENDING]
+- Public repository: [NOT RELEASED]; private repository verified.
+- Continuous disconnected-network demo video: [NOT VERIFIED / REVIEW PENDING]
+- Hardware OS / RAM / GPU / model cache size: [LOCAL HOST MANIFEST EXISTS; NOT INDEPENDENTLY REVIEWED]
 - Model license verification: [PENDING]
 - Organizer eligibility confirmation: [PENDING]
 - DoraHacks submission receipt: [NOT SUBMITTED]
