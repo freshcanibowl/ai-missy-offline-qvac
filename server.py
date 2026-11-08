@@ -27,11 +27,11 @@ class Handler(BaseHTTPRequestHandler):
         # No trusted patient identity, record ownership or consent backend exists.
         if path == '/api/metabolic' or path.startswith('/api/metabolic/'):
             return self.response({'error':'METABOLIC_AUTHORIZATION_UNAVAILABLE'},403)
-        if path in ('/','/app.js','/style.css'):
-            name={'/':'index.html','/app.js':'app.js','/style.css':'style.css'}[path]
+        if path in ('/','/app.js','/style.css','/today','/today.js','/today.css'):
+            name={'/':'index.html','/app.js':'app.js','/style.css':'style.css','/today':'today.html','/today.js':'today.js','/today.css':'today.css'}[path]
             data=(ROOT/'web'/name).read_bytes()
             self.send_response(200)
-            self.send_header('Content-Type',{'index.html':'text/html; charset=utf-8','app.js':'application/javascript; charset=utf-8','style.css':'text/css; charset=utf-8'}[name])
+            self.send_header('Content-Type',{'index.html':'text/html; charset=utf-8','today.html':'text/html; charset=utf-8','app.js':'application/javascript; charset=utf-8','today.js':'application/javascript; charset=utf-8','style.css':'text/css; charset=utf-8','today.css':'text/css; charset=utf-8'}[name])
             self.send_header('Content-Security-Policy',"default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'")
             self.send_header('Cache-Control','no-store')
             self.send_header('Content-Length',str(len(data)))
