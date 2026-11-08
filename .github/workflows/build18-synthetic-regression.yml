@@ -1,0 +1,42 @@
+name: AI Missy Synthetic Regression (Build 18)
+on:
+  pull_request:
+    paths:
+      - 'server.py'
+      - 'core.py'
+      - 'metabolic/**'
+      - 'tests/**'
+      - '.github/workflows/build18-synthetic-regression.yml'
+  push:
+    branches:
+      - feature/daily-metabolic-care-build09
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  regression:
+    name: Full Python synthetic regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify code compiles
+        run: python -m compileall -q core.py server.py metabolic tests
+      - name: All original and added Python tests
+        run: python -m unittest discover -s tests -v
+      - name: Explicit HTTP hard-deny tests
+        run: python -m unittest discover -s tests -p 'test_build17_metabolic_http_gate.py' -v
+      - name: Source trust gate (not medical or Windows QVAC certification)
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          source = Path('server.py').read_text()
+          assert "METABOLIC_AUTHORIZATION_UNAVAILABLE" in source
+          assert "path.startswith('/api/metabolic/')" in source
+          print("SYNTHETIC_HTTP_DENY_SOURCE_GATE=PASS")
+          print("REAL_PATIENT_RELEASE=NO_GO")
+          print("WINDOWS_QVAC_OFFLINE=PENDING")
+          PY
