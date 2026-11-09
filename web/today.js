@@ -7,16 +7,20 @@ const copy = {
 };
 const node=id=>document.getElementById(id);
 const checked=new Set();
-function paint(){
+let largeText=false;
+function paint(focusIndex=null){
  const locale=node("language").value;
  const t=copy[locale];
  document.documentElement.lang=locale==="zh"?"zh-Hans":locale;
  for(const [id,value] of [["language-label",t.language],["welcome",t.welcome],["subtitle",t.subtitle],["tasks-heading",t.heading],["measurement-note",t.note],["insight-heading",t.insightHeading],["safety-note",t.safety],["reset",t.reset],["footer-text",t.footer],["back-link",t.back]])node(id).textContent=value;
+ node("large-text").textContent=locale==="zh"?"放大文字":locale==="ms"?"Teks lebih besar":"Larger text";
+ node("large-text").setAttribute("aria-pressed",String(largeText));
+ node("skip-note").textContent=locale==="zh"?"任何项目都可以跳过。本演示不会为健康状况评分。":locale==="ms"?"Anda boleh langkau mana-mana item. Pratonton ini tidak memberi skor kesihatan.":"You may skip any item. This preview does not grade your health.";
  const tasks=node("tasks");tasks.replaceChildren();
  t.items.forEach(([name,detail],i)=>{
   const label=document.createElement("label");label.className="task";
-  const input=document.createElement("input");input.type="checkbox";input.checked=checked.has(i);input.setAttribute("aria-label",name);
-  input.addEventListener("change",()=>{if(input.checked)checked.add(i);else checked.delete(i);paint();});
+  const input=document.createElement("input");input.type="checkbox";input.checked=checked.has(i);input.setAttribute("aria-label",name);input.dataset.index=String(i);
+  input.addEventListener("change",()=>{if(input.checked)checked.add(i);else checked.delete(i);paint(i);});
   const box=document.createElement("span");box.className="task-copy";
   const strong=document.createElement("strong");strong.textContent=name;
   const small=document.createElement("small");small.textContent=detail;
@@ -24,7 +28,9 @@ function paint(){
  });
  node("summary").textContent=t.counter(checked.size);
  node("insight").textContent=checked.size?t.insightDone:t.insightEmpty;
+ if(focusIndex!==null){const next=tasks.querySelector(`input[data-index="${focusIndex}"]`);if(next)next.focus();}
 }
 node("language").addEventListener("change",paint);
 node("reset").addEventListener("click",()=>{checked.clear();paint();});
+node("large-text").addEventListener("click",()=>{largeText=!largeText;document.body.classList.toggle("large-type",largeText);paint();node("large-text").focus();});
 paint();
