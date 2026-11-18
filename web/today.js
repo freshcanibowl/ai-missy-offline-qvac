@@ -10,6 +10,16 @@ const checked=new Set();
 const history=[];
 let lastMessage="";
 let largeText=false;
+
+// Build26: optional synthetic modules, in-memory only, no clinical measurements.
+const featureKeys=["glucose","pressure","renal","lipids"];
+const enabledFeatures=new Set(["glucose","pressure"]);
+const featureMeta={
+ en:{heading:"Manage Functions",description:"Choose which sample care areas appear today. Nothing is stored.",session:"SESSION ONLY",note:"These switches only change this demonstration view. They do not configure clinical monitoring.",names:["Blood glucose","Blood pressure","Kidney care","Blood lipids"],details:["Sample glucose task only; no readings or insulin advice.","Sample pressure task only; no targets.","Follow-up reminder preview; no kidney risk prediction.","Lab follow-up preview; no lipid treatment advice."],renalTask:["Kidney follow-up","Follow the plan provided by your care professional; no readings entered."],lipidTask:["Blood lipid review","Note a future lab discussion; no levels or medicines entered."]},
+ zh:{heading:"管理功能",description:"选择今天展示哪些照护领域。关闭后不会保存资料。",session:"仅本次会话",note:"开关只改变演示界面，不会设置临床监测或治疗。",names:["血糖管理","血压管理","肾脏健康","血脂管理"],details:["仅展示血糖示例任务；无读数或胰岛素建议。","仅展示血压示例任务；不设定目标。","复诊提醒预览；不预测肾病风险。","化验复查预览；不提供降脂治疗建议。"],renalTask:["肾脏复查任务","以医护计划为准；此处不输入检验数值。"],lipidTask:["血脂化验复查","仅供安排复查讨论；不填写结果或药物。"]},
+ ms:{heading:"Urus Fungsi",description:"Pilih bidang penjagaan contoh untuk hari ini. Tiada data disimpan.",session:"SESI INI SAHAJA",note:"Suis ini hanya mengubah pratonton; bukan pelan pemantauan atau rawatan klinikal.",names:["Glukosa darah","Tekanan darah","Penjagaan buah pinggang","Lipid darah"],details:["Tugas contoh sahaja; tiada bacaan atau nasihat insulin.","Tugas contoh sahaja; tiada sasaran klinikal.","Pratonton susulan; bukan ramalan risiko buah pinggang.","Pratonton ujian makmal; bukan nasihat rawatan lipid."],renalTask:["Susulan buah pinggang","Ikut pelan penjagaan; tiada bacaan dimasukkan."],lipidTask:["Semakan lipid darah","Nota ujian makmal akan datang; tiada nilai atau ubat dimasukkan."]}
+};
+
 function paint(focusIndex=null){
  const locale=node("language").value;
  const t=copy[locale];
@@ -22,8 +32,28 @@ function paint(focusIndex=null){
  node("large-text").textContent=locale==="zh"?"放大文字":locale==="ms"?"Teks lebih besar":"Larger text";
  node("large-text").setAttribute("aria-pressed",String(largeText));
  node("skip-note").textContent=locale==="zh"?"任何项目都可以跳过。本演示不会为健康状况评分。":locale==="ms"?"Anda boleh langkau mana-mana item. Pratonton ini tidak memberi skor kesihatan.":"You may skip any item. This preview does not grade your health.";
+ const fm=featureMeta[locale];
+ for(const [id,value] of [["functions-heading",fm.heading],["functions-description",fm.description],["functions-session",fm.session],["functions-note",fm.note]])node(id).textContent=value;
+ const options=node("function-options");options.replaceChildren();
+ featureKeys.forEach((key,i)=>{
+  const label=document.createElement("label");label.className="feature-option";
+  const input=document.createElement("input");input.type="checkbox";input.dataset.feature=key;input.checked=enabledFeatures.has(key);input.setAttribute("aria-label",fm.names[i]);
+  input.addEventListener("change",()=>{
+   if(input.checked)enabledFeatures.add(key);else enabledFeatures.delete(key);
+   if(!input.checked)checked.delete(key==="glucose"?1:key==="pressure"?0:key==="renal"?4:5);
+   history.length=0;lastMessage="";paint();
+   const next=options.querySelector(`input[data-feature="${key}"]`);if(next)next.focus();
+  });
+  const desc=document.createElement("span");desc.className="feature-copy";
+  const title=document.createElement("strong");title.textContent=fm.names[i];
+  const detail=document.createElement("small");detail.textContent=fm.details[i];
+  desc.append(title,detail);label.append(input,desc);options.append(label);
+ });
  const tasks=node("tasks");tasks.replaceChildren();
- t.items.forEach(([name,detail],i)=>{
+ const entries=t.items.map((entry,i)=>({entry,i}));
+ entries.push({entry:fm.renalTask,i:4},{entry:fm.lipidTask,i:5});
+ const visibleEntries=entries.filter(({i})=>i===0?enabledFeatures.has("pressure"):i===1?enabledFeatures.has("glucose"):i===4?enabledFeatures.has("renal"):i===5?enabledFeatures.has("lipids"):true);
+ visibleEntries.forEach(({entry:[name,detail],i})=>{
   const label=document.createElement("label");label.className="task";
   const input=document.createElement("input");input.type="checkbox";input.checked=checked.has(i);input.setAttribute("aria-label",name);input.dataset.index=String(i);
   input.addEventListener("change",()=>{history.push(new Set(checked));if(input.checked)checked.add(i);else checked.delete(i);lastMessage="";paint(i);});
@@ -32,7 +62,7 @@ function paint(focusIndex=null){
   const small=document.createElement("small");small.textContent=detail;
   box.append(strong,small);label.append(input,box);tasks.append(label);
  });
- node("summary").textContent=t.counter(checked.size);
+ node("summary").textContent=t.counter(checked.size).replace(/4(?= sample| 个| item)/,String(visibleEntries.length));
  node("insight").textContent=checked.size?t.insightDone:t.insightEmpty;
  if(focusIndex!==null){const next=tasks.querySelector(`input[data-index="${focusIndex}"]`);if(next)next.focus();}
 }
