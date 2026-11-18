@@ -23,11 +23,15 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if not self.host_ok():return self.response({'error':'HOST_REJECTED'},403)
         path=urllib.parse.urlsplit(self.path).path
-        if path in ('/','/app.js','/style.css'):
-            name={'/':'index.html','/app.js':'app.js','/style.css':'style.css'}[path]
+        # Build17: deny all metabolic routes before any data read or session use.
+        # No trusted patient identity, record ownership or consent backend exists.
+        if path == '/api/metabolic' or path.startswith('/api/metabolic/'):
+            return self.response({'error':'METABOLIC_AUTHORIZATION_UNAVAILABLE'},403)
+        if path in ('/','/app.js','/style.css','/today','/today.js','/today.css'):
+            name={'/':'index.html','/app.js':'app.js','/style.css':'style.css','/today':'today.html','/today.js':'today.js','/today.css':'today.css'}[path]
             data=(ROOT/'web'/name).read_bytes()
             self.send_response(200)
-            self.send_header('Content-Type',{'index.html':'text/html; charset=utf-8','app.js':'application/javascript; charset=utf-8','style.css':'text/css; charset=utf-8'}[name])
+            self.send_header('Content-Type',{'index.html':'text/html; charset=utf-8','today.html':'text/html; charset=utf-8','app.js':'application/javascript; charset=utf-8','today.js':'application/javascript; charset=utf-8','style.css':'text/css; charset=utf-8','today.css':'text/css; charset=utf-8'}[name])
             self.send_header('Content-Security-Policy',"default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'")
             self.send_header('Cache-Control','no-store')
             self.send_header('Content-Length',str(len(data)))
@@ -37,6 +41,11 @@ class Handler(BaseHTTPRequestHandler):
             with closing(connect(DB)) as c:return self.response({'summary':summary(c),'reminders':reminders(c),'qvac_status':'NOT_TESTED_ON_THIS_DEVICE'})
         return self.response({'error':'NOT_FOUND'},404)
     def do_POST(self):
+        # Build17: fail closed BEFORE parsing a body, evaluating an untrusted
+        # session token or writing a record. No clinical data path is enabled.
+        path=urllib.parse.urlsplit(self.path).path
+        if path == '/api/metabolic' or path.startswith('/api/metabolic/'):
+            return self.response({'error':'METABOLIC_AUTHORIZATION_UNAVAILABLE'},403)
         if not self.host_ok() or self.headers.get('Origin') not in (f'http://127.0.0.1:{self.server.server_port}',f'http://localhost:{self.server.server_port}'):
             return self.response({'error':'ORIGIN_REJECTED'},403)
         if not secrets.compare_digest(self.headers.get('X-Missy-Token',''),TOKEN):return self.response({'error':'TOKEN_REJECTED'},403)
