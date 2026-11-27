@@ -67,9 +67,12 @@ class SyntheticHandoffService:
     Rejects any change to the global chain after a receipt was created,
     even when the target observation itself was not edited.
     """
-    def __init__(self, *, ledger: SyntheticMemoryLedger):
+    def __init__(self, *, ledger: SyntheticMemoryLedger, owner_subject: str):
         if not isinstance(ledger, SyntheticMemoryLedger):
             raise TypeError("SYNTHETIC_LEDGER_REQUIRED")
+        if not isinstance(owner_subject, str) or not EVENT_ID.fullmatch(owner_subject):
+            raise ValueError("SYNTHETIC_OWNER_SCOPE_REQUIRED")
+        self._owner_subject = owner_subject
         self._ledger = ledger
         self._receipts: dict[str, HandoffReceipt] = {}
 
@@ -78,6 +81,8 @@ class SyntheticHandoffService:
                             event_id: str):
         if purpose != PURPOSE or not isinstance(event_id, str) or not EVENT_ID.fullmatch(event_id):
             raise HandoffRejected("HANDOFF_CONTRACT_REJECTED")
+        if subject != self._owner_subject:
+            raise AccessDenied("HANDOFF_SUBJECT_OWNERSHIP_DENIED")
         return self._ledger.read_history(
             token=token, subject=subject, grantee=grantee,
             purpose=purpose, at=at, event_id=event_id
