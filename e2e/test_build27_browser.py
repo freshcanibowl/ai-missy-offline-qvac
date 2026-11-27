@@ -160,5 +160,76 @@ class FunctionsBrowserE2E(unittest.TestCase):
         self.page.locator("#reset").click()
         self.assertFalse(any("/api/" in url for url in traffic),traffic)
 
+    def test_16_timeline_only_includes_enabled_modules(self):
+        self.assertEqual(self.page.locator("#timeline-events .timeline-event").count(),2)
+        self.assertEqual(self.page.locator('[data-event-id="SYN-GL-001"]').count(),1)
+        self.assertEqual(self.page.locator('[data-event-id="SYN-BP-001"]').count(),1)
+        self.assertEqual(self.page.locator('[data-event-id="SYN-RN-001"]').count(),0)
+        self.toggle("renal")
+        self.assertEqual(self.page.locator("#timeline-events .timeline-event").count(),3)
+        self.toggle("glucose",False)
+        self.assertEqual(self.page.locator('[data-event-id="SYN-GL-001"]').count(),0)
+    def test_17_timeline_orders_by_observed_date_desc(self):
+        self.toggle("lipids")
+        self.toggle("renal")
+        ids=self.page.locator("#timeline-events .timeline-event").evaluate_all("(nodes)=>nodes.map(x=>x.dataset.eventId)")
+        self.assertEqual(ids,["SYN-LP-001","SYN-RN-001","SYN-GL-001","SYN-BP-001"])
+        observed=self.page.locator("#timeline-events time").evaluate_all("(nodes)=>nodes.map(x=>x.dateTime)")
+        self.assertEqual(observed,sorted(observed,reverse=True))
+    def test_18_timeline_provenance_is_explainable(self):
+        event=self.page.locator('[data-event-id="SYN-GL-001"]')
+        self.assertIn("Not verified",event.inner_text())
+        btn=event.locator("button.timeline-inspect")
+        self.assertEqual(btn.get_attribute("aria-expanded"),"false")
+        btn.click()
+        self.assertEqual(btn.get_attribute("aria-expanded"),"true")
+        self.assertTrue(event.locator("dl.timeline-provenance").is_visible())
+        self.assertIn("SYN-EV-102",event.inner_text())
+        self.assertIn("synthetic_patient_demo",event.inner_text())
+        btn.click()
+        self.assertFalse(event.locator("dl.timeline-provenance").is_visible())
+    def test_19_timeline_language_and_no_module_empty_state(self):
+        self.page.locator("#language").select_option("zh")
+        self.assertEqual(self.page.locator("#timeline-heading").inner_text(),"照护时间线")
+        self.assertIn("尚未验证",self.page.locator("#timeline-events").inner_text())
+        self.page.locator("#language").select_option("ms")
+        self.assertEqual(self.page.locator("#timeline-heading").inner_text(),"Garis masa penjagaan")
+        self.toggle("pressure",False)
+        self.toggle("glucose",False)
+        self.assertEqual(self.page.locator("#timeline-events .timeline-event").count(),0)
+        self.assertTrue(self.page.locator("#timeline-empty").is_visible())
+    def test_20_timeline_is_immutable_demo_not_checkin_history(self):
+        self.toggle("renal")
+        initial=self.page.locator("#timeline-events .timeline-event").count()
+        self.page.locator('#tasks input[data-index="4"]').check()
+        self.page.locator("#undo").click()
+        self.page.locator("#reset").click()
+        self.assertEqual(self.page.locator("#timeline-events .timeline-event").count(),initial)
+        self.page.reload()
+        self.assertEqual(self.page.locator("#timeline-events .timeline-event").count(),2)
+    def test_21_contract_rejects_invalid_and_untrusted_events(self):
+        result=self.page.evaluate("""() => ({
+         valid:timelineObservations.every(isValidTimelineObservation),
+         falseSynthetic:isValidTimelineObservation({...timelineObservations[0],synthetic:false}),
+         wrongScope:isValidTimelineObservation({...timelineObservations[0],scope:'patient'}),
+         futureRecorded:isValidTimelineObservation({...timelineObservations[0],recordedAt:'2026-09-01T00:00:00+08:00'}),
+         missingProvenance:isValidTimelineObservation({...timelineObservations[0],evidenceId:''}),
+         wrongDomain:isValidTimelineObservation({...timelineObservations[0],module:'medication'}),
+         invalidDate:isValidTimelineObservation({...timelineObservations[0],observedAt:'tomorrow'})
+        })""")
+        self.assertTrue(result["valid"])
+        for key in ("falseSynthetic","wrongScope","futureRecorded","missingProvenance","wrongDomain","invalidDate"):
+            self.assertFalse(result[key],key)
+    def test_22_timeline_no_patient_api_no_mobile_overflow(self):
+        requests=[]
+        self.page.on("request",lambda r:requests.append(r.url))
+        self.toggle("renal")
+        self.page.locator('[data-event-id="SYN-RN-001"] button.timeline-inspect').click()
+        self.page.locator("#language").select_option("zh")
+        self.page.locator("#large-text").click()
+        self.page.set_viewport_size({"width":375,"height":812})
+        self.assertTrue(self.page.evaluate("document.documentElement.scrollWidth <= innerWidth"))
+        self.assertFalse(any("/api/" in u for u in requests),requests)
+
 if __name__=="__main__":
     unittest.main()
