@@ -7,3 +7,20 @@
 
 /* Build26: user-selectable synthetic care functions. */
 .panel-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}.panel-heading h2{margin-bottom:3px}.panel-heading p{margin:0}.function-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:18px 0}.feature-option{display:flex;gap:11px;align-items:flex-start;min-height:92px;border:1px solid #d9e3dc;border-radius:14px;padding:14px;cursor:pointer;background:#fbfdfa}.feature-option:focus-within{outline:3px solid #91bfa4}.feature-option input{width:23px;height:23px;flex:none;accent-color:#2b7051;margin:2px 0}.feature-copy{display:grid;gap:4px}.feature-copy strong{font-size:16px}.feature-copy small{line-height:1.4;color:#596d61;font-size:13px}.large-type .feature-copy strong{font-size:1.2rem}.large-type .feature-copy small{font-size:1rem}@media(max-width:520px){.function-options{grid-template-columns:1fr}.feature-option{min-height:70px}}
+
+/* Build28: non-clinical, feature-driven My Care home panel */
+.care-dashboard{background:linear-gradient(155deg,#ffffff 0%,#f1f8f0 100%);border-color:#cbded0}
+.care-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:22px 0}
+.care-metric{background:#e9f3e9;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:4px}
+.care-metric strong{font-size:32px;font-variant-numeric:tabular-nums;color:#2a6046}
+.care-metric span{font-size:13px;color:#426052}
+.care-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.care-card{border:1px solid #d5e4d6;border-radius:16px;background:white;padding:15px;min-width:0}
+.care-card-head{display:flex;align-items:start;gap:8px;justify-content:space-between;flex-wrap:wrap}
+.care-card p{font-size:13px;color:#587163;line-height:1.5;min-height:55px}
+.care-card .care-state{font-size:11px;color:#56695c;background:#edf0ed;border-radius:20px;padding:5px 8px}
+.care-card .care-state-done{background:#dceede;color:#285e3c}
+.care-task-link{font-size:13px;min-height:40px;padding:8px 12px}
+#care-boundary{font-size:12px;margin:16px 0 0}
+.large-type .care-card p,.large-type .care-metric span{font-size:1rem}
+@media(max-width:520px){.care-cards{grid-template-columns:1fr}.care-card p{min-height:0}.care-metric strong{font-size:28px}}
