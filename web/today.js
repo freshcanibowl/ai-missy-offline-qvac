@@ -20,6 +20,39 @@ const featureMeta={
  ms:{heading:"Urus Fungsi",description:"Pilih bidang penjagaan contoh untuk hari ini. Tiada data disimpan.",session:"SESI INI SAHAJA",note:"Suis ini hanya mengubah pratonton; bukan pelan pemantauan atau rawatan klinikal.",names:["Glukosa darah","Tekanan darah","Penjagaan buah pinggang","Lipid darah"],details:["Tugas contoh sahaja; tiada bacaan atau nasihat insulin.","Tugas contoh sahaja; tiada sasaran klinikal.","Pratonton susulan; bukan ramalan risiko buah pinggang.","Pratonton ujian makmal; bukan nasihat rawatan lipid."],renalTask:["Susulan buah pinggang","Ikut pelan penjagaan; tiada bacaan dimasukkan."],lipidTask:["Semakan lipid darah","Nota ujian makmal akan datang; tiada nilai atau ubat dimasukkan."]}
 };
 
+
+const dashboardCopy={
+ en:{eyebrow:"MY CARE · SYNTHETIC",heading:"Today at a glance",description:"Only your selected care areas appear below.",status:"NOT A MEDICAL RECORD",completed:"Example tasks selected",remaining:"Example tasks remaining",empty:"No care modules selected. Use Manage Functions below.",boundary:"All tasks are fictional examples. Nothing is sent to PAIR or ACE.",done:"Selected",todo:"Not selected",open:"View task"},
+ zh:{eyebrow:"我的照护 · 合成演示",heading:"今天的照护一览",description:"这里仅显示您在功能管理中启用的健康模块。",status:"非医疗记录",completed:"已选择的示例任务",remaining:"未选择的示例任务",empty:"尚未启用健康模块。请在下方的管理功能中选择。",boundary:"所有任务均为虚构示例，不向 PAIR 或 ACE 发送资料。",done:"已选择",todo:"未选择",open:"查看任务"},
+ ms:{eyebrow:"PENJAGAAN SAYA · SINTETIK",heading:"Ringkasan penjagaan hari ini",description:"Hanya bidang penjagaan yang dipilih dipaparkan.",status:"BUKAN REKOD PERUBATAN",completed:"Tugas contoh dipilih",remaining:"Tugas contoh belum dipilih",empty:"Tiada modul dipilih. Gunakan Urus Fungsi di bawah.",boundary:"Semua tugas adalah contoh rekaan. Tiada data dihantar ke PAIR atau ACE.",done:"Dipilih",todo:"Belum dipilih",open:"Lihat tugas"}
+};
+const featureTaskIds={glucose:1,pressure:0,renal:4,lipids:5};
+function paintDashboard(locale,fm){
+ const d=dashboardCopy[locale];
+ for(const [id,val] of [["care-eyebrow",d.eyebrow],["care-heading",d.heading],["care-description",d.description],["care-status",d.status],["care-completed-label",d.completed],["care-remaining-label",d.remaining],["care-empty",d.empty],["care-boundary",d.boundary]])node(id).textContent=val;
+ const selected=featureKeys.filter(key=>enabledFeatures.has(key));
+ const complete=selected.filter(key=>checked.has(featureTaskIds[key])).length;
+ node("care-completed").textContent=String(complete);
+ node("care-remaining").textContent=String(selected.length-complete);
+ node("care-empty").hidden=selected.length!==0;
+ const cards=node("care-cards");cards.replaceChildren();
+ selected.forEach(key=>{
+  const idx=featureKeys.indexOf(key);
+  const done=checked.has(featureTaskIds[key]);
+  const card=document.createElement("article");card.className="care-card";card.dataset.care=key;
+  const top=document.createElement("div");top.className="care-card-head";
+  const heading=document.createElement("strong");heading.textContent=fm.names[idx];
+  const state=document.createElement("span");state.className=done?"care-state care-state-done":"care-state";state.textContent=done?d.done:d.todo;
+  const detail=document.createElement("p");detail.textContent=fm.details[idx];
+  const link=document.createElement("button");link.type="button";link.className="secondary care-task-link";link.textContent=d.open;
+  link.addEventListener("click",()=>{
+    const target=node("tasks").querySelector('input[data-index="'+featureTaskIds[key]+'"]');
+    if(target){target.scrollIntoView({block:"center",behavior:"instant"});target.focus();}
+  });
+  top.append(heading,state);card.append(top,detail,link);cards.append(card);
+ });
+}
+
 function paint(focusIndex=null){
  const locale=node("language").value;
  const t=copy[locale];
@@ -64,6 +97,7 @@ function paint(focusIndex=null){
  });
  node("summary").textContent=t.counter(checked.size).replace(/4(?= sample| 个| item)/,String(visibleEntries.length));
  node("insight").textContent=checked.size?t.insightDone:t.insightEmpty;
+ paintDashboard(locale,fm);
  if(focusIndex!==null){const next=tasks.querySelector(`input[data-index="${focusIndex}"]`);if(next)next.focus();}
 }
 node("language").addEventListener("change",paint);
