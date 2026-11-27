@@ -64,7 +64,7 @@ const timelineObservations=Object.freeze([
 ]);
 function isValidTimelineObservation(e){
  const allowed=new Set(["glucose","pressure","renal","lipids"]);
- const iso=s=>typeof s==="string"&&/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\+08:00$/.test(s)&&Number.isFinite(Date.parse(s));
+ const iso=s=>typeof s==="string"&&/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+08:00$/.test(s)&&Number.isFinite(Date.parse(s));
  return e&&e.synthetic===true&&e.scope==="demo_only"&&allowed.has(e.module)&&
  ["id","source","evidenceId"].every(k=>typeof e[k]==="string"&&e[k].startsWith("SYN-")||k==="source"&&["synthetic_patient_demo","synthetic_care_plan"].includes(e[k]))&&
  e.confirmation==="unverified"&&iso(e.observedAt)&&iso(e.recordedAt)&&Date.parse(e.observedAt)<=Date.parse(e.recordedAt);
