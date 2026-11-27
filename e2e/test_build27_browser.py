@@ -107,5 +107,58 @@ class FunctionsBrowserE2E(unittest.TestCase):
         self.assertEqual(response.status,403)
         self.assertEqual(response.json()["error"],"METABOLIC_AUTHORIZATION_UNAVAILABLE")
 
+    def test_09_dashboard_defaults_to_enabled_modules(self):
+        self.assertEqual(self.page.locator("#care-cards .care-card").count(),2)
+        self.assertEqual(self.page.locator('#care-cards [data-care="glucose"]').count(),1)
+        self.assertEqual(self.page.locator('#care-cards [data-care="pressure"]').count(),1)
+        self.assertEqual(self.page.locator("#care-completed").inner_text(),"0")
+        self.assertEqual(self.page.locator("#care-remaining").inner_text(),"2")
+    def test_10_dashboard_updates_with_module_switches(self):
+        self.toggle("renal")
+        self.assertEqual(self.page.locator('#care-cards [data-care="renal"]').count(),1)
+        self.assertEqual(self.page.locator("#care-remaining").inner_text(),"3")
+        self.toggle("pressure",False)
+        self.assertEqual(self.page.locator('#care-cards [data-care="pressure"]').count(),0)
+        self.assertEqual(self.page.locator("#care-remaining").inner_text(),"2")
+    def test_11_dashboard_updates_when_task_checked_and_undone(self):
+        self.page.locator('#tasks input[data-index="1"]').check()
+        self.assertEqual(self.page.locator("#care-completed").inner_text(),"1")
+        self.assertEqual(self.page.locator("#care-remaining").inner_text(),"1")
+        self.assertIn("Selected",self.page.locator('[data-care="glucose"]').inner_text())
+        self.page.locator("#undo").click()
+        self.assertEqual(self.page.locator("#care-completed").inner_text(),"0")
+        self.assertEqual(self.page.locator("#care-remaining").inner_text(),"2")
+    def test_12_dashboard_locales_and_action_focus(self):
+        self.page.locator("#language").select_option("zh")
+        self.assertEqual(self.page.locator("#care-heading").inner_text(),"今天的照护一览")
+        self.page.locator('[data-care="glucose"] .care-task-link').click()
+        self.assertEqual(self.page.evaluate("document.activeElement.dataset.index"),"1")
+        self.page.locator("#language").select_option("ms")
+        self.assertEqual(self.page.locator("#care-heading").inner_text(),"Ringkasan penjagaan hari ini")
+        self.assertTrue(self.page.locator('[data-care="glucose"]').is_visible())
+    def test_13_no_modules_empty_and_reloading_resets_dashboard(self):
+        self.toggle("glucose",False)
+        self.toggle("pressure",False)
+        self.assertEqual(self.page.locator("#care-cards .care-card").count(),0)
+        self.assertTrue(self.page.locator("#care-empty").is_visible())
+        self.assertEqual(self.page.locator("#care-remaining").inner_text(),"0")
+        self.page.reload(wait_until="load")
+        self.assertEqual(self.page.locator("#care-cards .care-card").count(),2)
+    def test_14_mobile_dashboard_has_no_overflow_with_large_text(self):
+        self.toggle("renal")
+        self.toggle("lipids")
+        self.page.locator("#large-text").click()
+        self.page.set_viewport_size({"width":375,"height":812})
+        self.assertTrue(self.page.evaluate("document.documentElement.scrollWidth <= innerWidth"))
+        self.assertEqual(self.page.locator("#care-cards .care-card").count(),4)
+    def test_15_dashboard_never_fetches_patient_data(self):
+        traffic=[]
+        self.page.on("request",lambda r:traffic.append(r.url))
+        self.toggle("renal")
+        self.page.locator('#tasks input[data-index="4"]').check()
+        self.page.locator("#undo").click()
+        self.page.locator("#reset").click()
+        self.assertFalse(any("/api/" in url for url in traffic),traffic)
+
 if __name__=="__main__":
     unittest.main()
