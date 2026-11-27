@@ -211,7 +211,7 @@ class SyntheticWorkflow:
 
     def status(self, *, actor: str, case_id: str) -> str:
         case=self._case(case_id)
-        if actor not in (case.proposer, case.reviewer, case.executor, case.recipient) and actor not in self._roles:
+        if actor not in (case.proposer, case.reviewer, case.executor, case.recipient):
             raise WorkflowDenied("ROLE_DENIED")
         # No observation data is returned.
         return case.state
