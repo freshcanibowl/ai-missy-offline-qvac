@@ -24,3 +24,19 @@
 #care-boundary{font-size:12px;margin:16px 0 0}
 .large-type .care-card p,.large-type .care-metric span{font-size:1rem}
 @media(max-width:520px){.care-cards{grid-template-columns:1fr}.care-card p{min-height:0}.care-metric strong{font-size:28px}}
+
+/* Build29 temporal context: clearly fictional and read-only. */
+.timeline-events{display:grid;gap:12px;margin:18px 0}
+.timeline-event{padding:15px;border:1px solid #d6e5dc;border-left:4px solid #89ac98;border-radius:12px;background:#fcfdfb}
+.timeline-event-head{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.timeline-event-head strong{font-size:15px}
+.timeline-event-head time{font-size:13px;font-variant-numeric:tabular-nums;color:#526c5c}
+.timeline-unverified{font-size:12px;color:#6d6458;margin:10px 0}
+.timeline-inspect{font-size:13px;min-height:40px}
+.timeline-provenance{display:grid;grid-template-columns:minmax(95px,1fr) minmax(0,2fr);gap:7px 9px;font-size:12px;overflow-wrap:anywhere}
+.timeline-provenance[hidden]{display:none}
+.timeline-provenance dt{color:#5a6d5e}
+.timeline-provenance dd{margin:0;font-family:ui-monospace,monospace}
+.large-type .timeline-event-head strong{font-size:1.1rem}
+.large-type .timeline-provenance{font-size:1rem}
+@media(max-width:480px){.timeline-provenance{grid-template-columns:1fr}.timeline-provenance dd{margin-bottom:6px}}
