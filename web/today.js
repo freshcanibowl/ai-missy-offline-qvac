@@ -53,6 +53,51 @@ function paintDashboard(locale,fm){
  });
 }
 
+
+// Build29: immutable synthetic-only temporal observations, independent from task checkboxes.
+// Contract: provenance + two timestamps + explicit status; no medical values or clinical scoring.
+const timelineObservations=Object.freeze([
+ Object.freeze({id:"SYN-BP-001",module:"pressure",event:"review",observedAt:"2026-10-03T09:30:00+08:00",recordedAt:"2026-10-03T09:35:00+08:00",source:"synthetic_patient_demo",confirmation:"unverified",evidenceId:"SYN-EV-101",synthetic:true,scope:"demo_only"}),
+ Object.freeze({id:"SYN-GL-001",module:"glucose",event:"check_in",observedAt:"2026-10-10T08:15:00+08:00",recordedAt:"2026-10-10T08:20:00+08:00",source:"synthetic_patient_demo",confirmation:"unverified",evidenceId:"SYN-EV-102",synthetic:true,scope:"demo_only"}),
+ Object.freeze({id:"SYN-RN-001",module:"renal",event:"follow_up",observedAt:"2026-10-17T14:00:00+08:00",recordedAt:"2026-10-17T14:05:00+08:00",source:"synthetic_care_plan",confirmation:"unverified",evidenceId:"SYN-EV-103",synthetic:true,scope:"demo_only"}),
+ Object.freeze({id:"SYN-LP-001",module:"lipids",event:"lab_review",observedAt:"2026-10-24T11:00:00+08:00",recordedAt:"2026-10-24T11:07:00+08:00",source:"synthetic_care_plan",confirmation:"unverified",evidenceId:"SYN-EV-104",synthetic:true,scope:"demo_only"})
+]);
+function isValidTimelineObservation(e){
+ const allowed=new Set(["glucose","pressure","renal","lipids"]);
+ const iso=s=>typeof s==="string"&&/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\+08:00$/.test(s)&&Number.isFinite(Date.parse(s));
+ return e&&e.synthetic===true&&e.scope==="demo_only"&&allowed.has(e.module)&&
+ ["id","source","evidenceId"].every(k=>typeof e[k]==="string"&&e[k].startsWith("SYN-")||k==="source"&&["synthetic_patient_demo","synthetic_care_plan"].includes(e[k]))&&
+ e.confirmation==="unverified"&&iso(e.observedAt)&&iso(e.recordedAt)&&Date.parse(e.observedAt)<=Date.parse(e.recordedAt);
+}
+if(!timelineObservations.every(isValidTimelineObservation))throw new Error("SYNTHETIC_TIMELINE_CONTRACT_INVALID");
+const timelineCopy={
+ en:{eyebrow:"CONTEXT · SYNTHETIC",heading:"Care timeline",intro:"Dated fictional events with traceable source and confirmation status.",status:"READ ONLY",empty:"No dated examples for selected modules.",boundary:"Not a medical record, adherence measure or risk prediction. Nothing is saved.",events:{review:"Sample check-in",check_in:"Sample glucose check-in",follow_up:"Sample follow-up",lab_review:"Sample laboratory review"},source:"Source",recorded:"Recorded",confirmation:"Confirmation",evidence:"Evidence ID",scope:"Scope",inspect:"Show provenance",hide:"Hide provenance",unverified:"Not verified"},
+ zh:{eyebrow:"长期上下文 · 合成演示",heading:"照护时间线",intro:"按日期展示虚构事件、来源与确认状态。",status:"仅供查看",empty:"所选模块暂无示例时间线。",boundary:"并非医疗记录、依从性指标或风险预测。不会保存资料。",events:{review:"模拟日常回顾",check_in:"模拟血糖记录事项",follow_up:"模拟肾脏复查",lab_review:"模拟血脂检验复查"},source:"来源",recorded:"登记时间",confirmation:"确认状态",evidence:"证据编号",scope:"使用范围",inspect:"查看来源证据",hide:"收起来源证据",unverified:"尚未验证"},
+ ms:{eyebrow:"KONTEKS · SINTETIK",heading:"Garis masa penjagaan",intro:"Peristiwa rekaan mengikut tarikh, sumber dan status pengesahan.",status:"BACA SAHAJA",empty:"Tiada contoh bagi modul yang dipilih.",boundary:"Bukan rekod perubatan, ukuran pematuhan atau ramalan risiko. Tiada data disimpan.",events:{review:"Semakan contoh",check_in:"Semakan glukosa contoh",follow_up:"Susulan contoh",lab_review:"Semakan makmal contoh"},source:"Sumber",recorded:"Direkodkan",confirmation:"Pengesahan",evidence:"ID bukti",scope:"Skop",inspect:"Lihat asal-usul",hide:"Tutup asal-usul",unverified:"Belum disahkan"}
+};
+function paintTimeline(locale){
+ const t=timelineCopy[locale],fm=featureMeta[locale];
+ for(const [id,value] of [["timeline-eyebrow",t.eyebrow],["timeline-heading",t.heading],["timeline-intro",t.intro],["timeline-status",t.status],["timeline-empty",t.empty],["timeline-boundary",t.boundary]])node(id).textContent=value;
+ const events=timelineObservations.filter(e=>enabledFeatures.has(e.module)).slice().sort((a,b)=>Date.parse(b.observedAt)-Date.parse(a.observedAt));
+ const container=node("timeline-events");container.replaceChildren();node("timeline-empty").hidden=events.length!==0;
+ events.forEach(e=>{
+  const article=document.createElement("article");article.className="timeline-event";article.dataset.eventId=e.id;
+  const heading=document.createElement("strong");heading.textContent=fm.names[featureKeys.indexOf(e.module)]+" · "+t.events[e.event];
+  const day=document.createElement("time");day.dateTime=e.observedAt;day.textContent=e.observedAt.slice(0,10);
+  const header=document.createElement("div");header.className="timeline-event-head";header.append(heading,day);
+  const badge=document.createElement("p");badge.className="timeline-unverified";badge.textContent=t.unverified+" · "+e.id;
+  const details=document.createElement("dl");details.className="timeline-provenance";details.hidden=true;
+  for(const [label,value] of [[t.source,e.source],[t.recorded,e.recordedAt],[t.confirmation,e.confirmation],[t.evidence,e.evidenceId],[t.scope,e.scope]]){
+   const term=document.createElement("dt");term.textContent=label;
+   const data=document.createElement("dd");data.textContent=value;
+   details.append(term,data);
+  }
+  const btn=document.createElement("button");btn.type="button";btn.className="secondary timeline-inspect";btn.textContent=t.inspect;btn.setAttribute("aria-expanded","false");
+  btn.addEventListener("click",()=>{details.hidden=!details.hidden;btn.setAttribute("aria-expanded",String(!details.hidden));btn.textContent=details.hidden?t.inspect:t.hide;});
+  article.append(header,badge,btn,details);container.append(article);
+ });
+}
+
 function paint(focusIndex=null){
  const locale=node("language").value;
  const t=copy[locale];
@@ -98,6 +143,7 @@ function paint(focusIndex=null){
  node("summary").textContent=t.counter(checked.size).replace(/4(?= sample| 个| item)/,String(visibleEntries.length));
  node("insight").textContent=checked.size?t.insightDone:t.insightEmpty;
  paintDashboard(locale,fm);
+ paintTimeline(locale);
  if(focusIndex!==null){const next=tasks.querySelector(`input[data-index="${focusIndex}"]`);if(next)next.focus();}
 }
 node("language").addEventListener("change",paint);
