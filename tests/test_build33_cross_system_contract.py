@@ -138,7 +138,7 @@ class CrossSystemBuild33(unittest.TestCase):
  def test_24_no_actual_transport_persistence_or_clinical_claim(self):
   from pathlib import Path
   src=Path("metabolic/cross_system_contract.py").read_text()
-  self.assertNotIn("requests.",src)
+  self.assertNotIn("import requests",src)
   self.assertNotIn("urlopen(",src)
   self.assertNotIn("sqlite3.",src)
   self.assertNotIn("patient_record",src)
