@@ -25,7 +25,7 @@ class EvidenceBoundHandoffBuild31(unittest.TestCase):
     def setUp(self):
         self.ace=SyntheticAceContract(testing_key=b"synthetic-test-key-only-0123456789abcdef")
         self.ledger=SyntheticMemoryLedger(authorization=self.ace)
-        self.svc=SyntheticHandoffService(ledger=self.ledger)
+        self.svc=SyntheticHandoffService(ledger=self.ledger,owner_subject=PAT)
         self.event=example()
         self.ledger.create(self.event)
         self.token=self.ace.issue_fixture(
@@ -169,7 +169,7 @@ class EvidenceBoundHandoffBuild31(unittest.TestCase):
     def test_27_no_authority_defaults_to_denial(self):
         isolated=SyntheticMemoryLedger()
         isolated.create(self.event)
-        service=SyntheticHandoffService(ledger=isolated)
+        service=SyntheticHandoffService(ledger=isolated,owner_subject=PAT)
         with self.assertRaises(AccessDenied):
             service.issue_receipt(event_id=self.event.event_id,**self.params())
     def test_28_wrong_credential_on_valid_receipt_denied(self):
@@ -184,6 +184,19 @@ class EvidenceBoundHandoffBuild31(unittest.TestCase):
             issued_at="2026-11-20T00:00:00+08:00",valid_until="2026-12-02T00:00:00+08:00")
         with self.assertRaises(HandoffRejected):
             self.inspect(r,token=fresh)
+    def test_31_foreign_valid_grant_still_cannot_read_owner_ledger(self):
+        foreign=self.ace.issue_fixture(
+            grant_id="SYN-GRANT-FOREIGN",subject="SYN-PATIENT-002",
+            grantee=READER,purpose=P,
+            issued_at="2026-11-20T00:00:00+08:00",
+            valid_until="2026-12-02T00:00:00+08:00")
+        with self.assertRaises(AccessDenied):
+            self.svc.issue_receipt(
+                event_id=self.event.event_id,
+                **self.params(token=foreign,subject="SYN-PATIENT-002"))
+    def test_32_owner_required_in_service(self):
+        with self.assertRaises(ValueError):
+            SyntheticHandoffService(ledger=self.ledger,owner_subject="real-person")
     def test_30_exposed_api_does_not_exist(self):
         from pathlib import Path
         code=Path("server.py").read_text()
