@@ -1,0 +1,135 @@
+{
+  "schema": "ai-missy.build34.conformance-audit.v1",
+  "observed_on": "2026-11-27",
+  "synthetic_only": true,
+  "source_evidence": [
+    {
+      "repo": "freshcanibowl/ACE",
+      "path": "packages/contracts-schema/src/index.js",
+      "sha": "d582ecdce22f3c85d0023a41574535fc079ce31d",
+      "facts": [
+        "ace.edge-capture/0.1",
+        "ace.engine-input/0.1",
+        "ace.escalation-event/0.1",
+        "ace.consent/0.1"
+      ],
+      "status": "SOURCE_INSPECTED"
+    },
+    {
+      "repo": "freshcanibowl/ACE",
+      "path": "packages/contracts-schema/test/index.test.js",
+      "sha": "be61ef530550259a662797e6b99302cd843b09c9",
+      "facts": [
+        "schema constructor tests"
+      ],
+      "status": "SOURCE_INSPECTED"
+    },
+    {
+      "repo": "freshcanibowl/pair-renal-care",
+      "path": "web/intake.js",
+      "sha": "f57c2d9fa7fa56bf5524d08840e73ee939859716",
+      "facts": [
+        "pair.renal-intake.v1",
+        "deidentified required",
+        "measurement confidence required",
+        "extract_and_normalize_only"
+      ],
+      "status": "SOURCE_INSPECTED"
+    },
+    {
+      "repo": "freshcanibowl/pair-renal-care",
+      "path": "web/engine.js",
+      "sha": "6d51676aca588df9b6166405b3f93002ea24c057",
+      "facts": [
+        "review_context",
+        "prompt_medical_review",
+        "urgent_professional_assessment"
+      ],
+      "status": "SOURCE_INSPECTED"
+    },
+    {
+      "repo": "freshcanibowl/pair-renal-care",
+      "path": "web/missy.js",
+      "sha": "0fe60c5a6e591fd39924b18f3c149b605967e546",
+      "facts": [
+        "pair.ai-missy-request.v1",
+        "pair.ai-missy-runtime.v1",
+        "escalation_state_modified guard"
+      ],
+      "status": "SOURCE_INSPECTED"
+    },
+    {
+      "repo": "freshcanibowl/pair-renal-care",
+      "path": "api/tencent-explain.js",
+      "sha": "6a38b49b885b50ef46553f2f9e6e8cf8a542157c",
+      "facts": [
+        "POST explanation route",
+        "demo fallback possible",
+        "live provider not established"
+      ],
+      "status": "SOURCE_INSPECTED"
+    },
+    {
+      "repo": "freshcanibowl/ai-missy-offline-qvac",
+      "path": "metabolic/cross_system_contract.py",
+      "sha": "",
+      "facts": [
+        "missy-ace-pair-synthetic.v1",
+        "in-process fixture ACK only"
+      ],
+      "status": "SOURCE_INSPECTED"
+    }
+  ],
+  "gates": [
+    {
+      "id": "G1",
+      "name": "official_pair_ack_wire_contract",
+      "status": "NOT_VERIFIED",
+      "required_evidence": "provider-approved endpoint, request/response schema and receipt validation"
+    },
+    {
+      "id": "G2",
+      "name": "ace_real_authz_contract",
+      "status": "NOT_VERIFIED",
+      "required_evidence": "readable actual service routes, identity ownership and revocation propagation"
+    },
+    {
+      "id": "G3",
+      "name": "escalation_enum_alignment",
+      "status": "MISMATCH",
+      "required_evidence": "signed-off explicit mapping preserving the strongest escalation state"
+    },
+    {
+      "id": "G4",
+      "name": "pair_intake_adapter_conformance",
+      "status": "MISMATCH",
+      "required_evidence": "independent fixture tests for deidentification, confidence, human confirmation"
+    },
+    {
+      "id": "G5",
+      "name": "cross_system_identity_binding",
+      "status": "NOT_VERIFIED",
+      "required_evidence": "real authenticated subject and recipient bindings verified at all three services"
+    },
+    {
+      "id": "G6",
+      "name": "durable_idempotency_and_audit",
+      "status": "NOT_VERIFIED",
+      "required_evidence": "real persistence, replay recovery and independent audit checks"
+    },
+    {
+      "id": "G7",
+      "name": "real_three_system_loopback",
+      "status": "NOT_VERIFIED",
+      "required_evidence": "independent authorized run with exact traces, no patient data"
+    },
+    {
+      "id": "G8",
+      "name": "medical_and_privacy_release",
+      "status": "NOT_VERIFIED",
+      "required_evidence": "authorized review, documented purpose, approval, institution legal requirements"
+    }
+  ],
+  "release_gate": "NO_GO",
+  "reason": "Unresolved source and contract gaps; no real ACE/PAIR end-to-end verification"
+}

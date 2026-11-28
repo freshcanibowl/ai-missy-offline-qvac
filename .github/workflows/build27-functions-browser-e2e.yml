@@ -1,0 +1,49 @@
+name: AI Missy Functions Browser E2E (Build 27)
+on:
+  push:
+    branches:
+      - feature/daily-metabolic-care-build09
+    paths:
+      - 'web/today.*'
+      - 'e2e/**'
+      - 'server.py'
+      - '.github/workflows/build27-functions-browser-e2e.yml'
+  pull_request:
+    paths:
+      - 'web/today.*'
+      - 'e2e/**'
+      - 'server.py'
+      - '.github/workflows/build27-functions-browser-e2e.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  chromium-e2e:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify actual UI script parses
+        run: node --check web/today.js
+      - name: Install test-only Playwright and Chromium
+        run: |
+          python -m pip install "playwright==1.56.0"
+          python -m playwright install --with-deps chromium
+      - name: Real Chromium test (synthetic only)
+        run: python -m unittest e2e.test_build27_browser -v
+      - name: Source safety gate
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          body=Path("server.py").read_text()
+          assert "METABOLIC_AUTHORIZATION_UNAVAILABLE" in body
+          assert "path.startswith('/api/metabolic/')" in body
+          print("METABOLIC_HTTP_HARD_DENY=PASS")
+          print("CLINICAL_RELEASE=NO_GO")
+          PY
